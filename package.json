@@ -1,15 +1,16 @@
 {
   "name": "html-vercel-deploy",
   "version": "1.0.0",
-  "scripts": {
-    "build:html": "html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true src/index.html -o dist/index.html",
-    "build:js": "terser src/app.js -c -m -o dist/app.js",
-    "build:css": "cpx \"src/style.css\" dist/",
-    "build": "npm run build:html && npm run build:js && npm run build:css"
-  },
+"scripts": {
+  "build:html": "mkdirp dist && html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true src/index.html -o dist/index.html",
+  "build:js": "mkdirp dist && terser src/app.js -c -m -o dist/app.js",
+  "build:css": "mkdirp dist && cpx \"src/style.css\" dist/",
+  "build": "npm run build:html && npm run build:js && npm run build:css"
+},
   "devDependencies": {
     "cpx": "^1.5.0",
     "html-minifier-terser": "^7.0.0",
+    "mkdirp": "^3.0.1",
     "terser": "^5.20.0"
   }
 }
