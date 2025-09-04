@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Import map for modules -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+      "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
+    }
+  }
+  </script>
+
+  <!-- Main JS -->
+  <script type="module" src="./app.js"></script>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="./style.css">
+  
+  <title>AR Experience</title>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+    Initializing AR...
+  </div>
+  <div id="container"></div>
+</body>
+</html>
