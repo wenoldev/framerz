@@ -17,16 +17,16 @@
       // Get slug from URL query parameter
       const urlParams = new URLSearchParams(window.location.search);
       const slug = urlParams.get('f');
-      if (!slug || slug.length !== 5) {
+      if (!slug || slug.length !== 6) {
         console.error('Invalid or missing slug in URL');
-        alert('Please provide a valid 5-letter slug in the URL (?f=XXXXX)');
+        alert('Please provide a valid 6-letter slug in the URL (?f=XXXXX)');
         throw new Error('Invalid slug');
       }
 
       // Fetch mind file, video URL, and customer name from API
       const fetchAssets = async () => {
         try {
-          const response = await fetch(`https://framerz-dashboard/api?slug=${slug}`);
+          const response = await fetch(`https://framerz-dashboard.vercel.app/api?slug=${slug}`);
           if (!response.ok) throw new Error('Failed to fetch assets');
           const data = await response.json();
           return {
