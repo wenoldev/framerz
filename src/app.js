@@ -52,34 +52,35 @@ const initAR = async () => {
   const videoTexture = new THREE.VideoTexture(video);
 
   // Wait for video metadata (get natural aspect ratio)
-  video.addEventListener("loadedmetadata", () => {
-    const aspect = video.videoWidth / video.videoHeight;
-    const height = 1; // base height, tweak scale here
-    const width = height * aspect;
+video.addEventListener("loadedmetadata", () => {
+  // Get the video’s natural aspect ratio
+  const aspect = video.videoHeight / video.videoWidth;
 
-    const geometry = new THREE.PlaneGeometry(width, height);
-    const material = new THREE.MeshBasicMaterial({ map: videoTexture });
-    const plane = new THREE.Mesh(geometry, material);
-    anchor.group.add(plane);
+  // Make the plane full width = 1, height scaled by aspect
+  const geometry = new THREE.PlaneGeometry(1, aspect);
+  const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+  const plane = new THREE.Mesh(geometry, material);
+  anchor.group.add(plane);
 
-    // Click → toggle play/pause
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    renderer.domElement.addEventListener("click", (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObject(plane);
-      if (intersects.length > 0) {
-        if (video.paused) {
-          video.muted = false;
-          video.play();
-        } else {
-          video.pause();
-        }
+  // Click → toggle play/pause
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  renderer.domElement.addEventListener("click", (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObject(plane);
+    if (intersects.length > 0) {
+      if (video.paused) {
+        video.muted = false;
+        video.play();
+      } else {
+        video.pause();
       }
-    });
+    }
   });
+});
+
 
   // Play video ONLY when AR target detected
   anchor.onTargetFound = () => {
