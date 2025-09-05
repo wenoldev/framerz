@@ -50,41 +50,43 @@ const initAR = async () => {
   video.muted = true;
 
   const videoTexture = new THREE.VideoTexture(video);
-  const geometry = new THREE.PlaneGeometry(1, 0.55);
-  const material = new THREE.MeshBasicMaterial({ map: videoTexture });
-  const plane = new THREE.Mesh(geometry, material);
-  anchor.group.add(plane);
 
-  // Autoplay muted
-  video.play().catch(err => console.log("Initial autoplay blocked:", err));
+  // Wait for video metadata (get natural aspect ratio)
+  video.addEventListener("loadedmetadata", () => {
+    const aspect = video.videoWidth / video.videoHeight;
+    const height = 1; // base height, tweak scale here
+    const width = height * aspect;
 
-  // Try unmute after 3s
-  setTimeout(() => {
-    video.muted = false;
-    video.play().catch(err => console.log("Autoplay with sound blocked:", err));
-  }, 3000);
+    const geometry = new THREE.PlaneGeometry(width, height);
+    const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+    const plane = new THREE.Mesh(geometry, material);
+    anchor.group.add(plane);
 
-  // Play when AR target detected
-  anchor.onTargetFound = () => video.play().catch(err => console.log("Play blocked:", err));
-  anchor.onTargetLost = () => video.pause();
-
-  // Click → toggle play/pause
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-  renderer.domElement.addEventListener("click", (event) => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObject(plane);
-    if (intersects.length > 0) {
-      if (video.paused) {
-        video.muted = false;
-        video.play();
-      } else {
-        video.pause();
+    // Click → toggle play/pause
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    renderer.domElement.addEventListener("click", (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(plane);
+      if (intersects.length > 0) {
+        if (video.paused) {
+          video.muted = false;
+          video.play();
+        } else {
+          video.pause();
+        }
       }
-    }
+    });
   });
+
+  // Play video ONLY when AR target detected
+  anchor.onTargetFound = () => {
+    video.muted = false; // set true if you want silent start
+    video.play().catch(err => console.log("Play blocked:", err));
+  };
+  anchor.onTargetLost = () => video.pause();
 
   // Start AR
   try {
